@@ -2,6 +2,7 @@ package fuse
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/roderickjdunn/fusego/src/bitap"
@@ -9,8 +10,8 @@ import (
 
 // TODO: this is literally translated from JS for now, and doesn't work for GO sorts. Sorting functionality needs to be implemented
 //		 properly by following this link: https://golang.org/pkg/sort/
-func defaultSortFn(m1 Match, m2 Match) float32 {
-	return m1.score - m2.score
+func defaultSortFn(results []FuseResult, r1 int, r2 int) bool {
+	return results[r1].score < results[r2].score
 }
 
 func DefaultOptions() *FuseOptions {
@@ -225,6 +226,12 @@ func FuseSearch(fuse Fuse, pattern string) []Match {
 	// fmt.Println("tokenSearchers", tokenSearchers)
 
 	results := _search(fuse, tokenSearchers, fullSearcher)
+
+	// sort.Sort(ByScore(results))
+
+	sort.Slice(results, func(i, j int) bool {
+		return fuse.options.SortFn(results, i, j)
+	})
 
 	resLen := len(results)
 

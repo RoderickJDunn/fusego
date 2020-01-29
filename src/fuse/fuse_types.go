@@ -16,7 +16,7 @@ type Match struct {
 	// key string
 }
 
-type SortFunc func(m1 Match, m2 Match) float32
+type SortFunc func(results []FuseResult, r1 int, r2 int) bool
 
 type FuseOptions struct {
 	// Approximately where in the text is the pattern expected to be found?
