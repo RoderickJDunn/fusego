@@ -1,4 +1,4 @@
-package main
+package fuse
 
 type Match struct {
 	// index of the Match within `list`
@@ -20,43 +20,43 @@ type SortFunc func(m1 Match, m2 Match) float32
 
 type FuseOptions struct {
 	// Approximately where in the text is the pattern expected to be found?
-	location uint
+	Location uint
 	// Determines how close the match must be to the fuzzy location (specified above).
 	// An exact letter match which is 'distance' characters away from the fuzzy location
 	// would score as a complete mismatch. A distance of '0' requires the match be at
 	// the exact location specified, a threshold of '1000' would require a perfect match
 	// to be within 800 characters of the fuzzy location to be found using a 0.8 threshold.
-	distance uint
+	Distance uint
 	// At what point does the match algorithm give up. A threshold of '0.0' requires a perfect match
 	// (of both letters and location), a threshold of '1.0' would match anything.
-	threshold float32
+	Threshold float32
 	// Machine word size
-	maxPatternLength uint
+	MaxPatternLength uint
 	// Indicates whether comparisons should be case sensitive.
-	caseSensitive bool
+	CaseSensitive bool
 	// Regex used to separate words when searching. Only applicable when `tokenize` is `true`.
 	/** tokenSeparator string **/
 	// When true, the algorithm continues searching to the end of the input even if a perfect
 	// match is found before the end of the same input.
-	findAllMatches bool
+	FindAllMatches bool
 	// Minimum number of characters that must be matched before a result is considered a match
-	minMatchCharLength uint
+	MinMatchCharLength uint
 
 	// Whether to sort the result list, by score
-	shouldSort bool
+	ShouldSort bool
 
 	// Default sort function
-	sortFn SortFunc
+	SortFn SortFunc
 	// When true, the search algorithm will search individual words **and** the full string,
 	// computing the final score as a function of both. Note that when `tokenize` is `true`,
 	// the `threshold`, `distance`, and `location` are inconsequential for individual tokens.
-	tokenize bool
+	Tokenize bool
 	// When true, the result set will only include records that match all tokens. Will only work
 	// if `tokenize` is also true.
-	matchAllTokens bool
+	MatchAllTokens bool
 
-	includeMatches bool
-	includeScore   bool
+	IncludeMatches bool
+	IncludeScore   bool
 
 	/***** TODO: Options related to map/dictionary support. *****/
 	// The name of the identifier property. If specified, the returned result will be a list

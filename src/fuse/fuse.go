@@ -1,4 +1,4 @@
-package main
+package fuse
 
 import (
 	"fmt"
@@ -15,19 +15,19 @@ func defaultSortFn(m1 Match, m2 Match) float32 {
 
 func DefaultOptions() *FuseOptions {
 	defaultOptions := FuseOptions{
-		location:           0,
-		distance:           100,
-		threshold:          0.6,
-		maxPatternLength:   32,
-		caseSensitive:      false,
-		findAllMatches:     false,
-		minMatchCharLength: 1,
-		shouldSort:         false,
-		sortFn:             defaultSortFn,
-		tokenize:           false,
-		matchAllTokens:     false,
-		includeMatches:     false,
-		includeScore:       false,
+		Location:           0,
+		Distance:           100,
+		Threshold:          0.6,
+		MaxPatternLength:   32,
+		CaseSensitive:      false,
+		FindAllMatches:     false,
+		MinMatchCharLength: 1,
+		ShouldSort:         false,
+		SortFn:             defaultSortFn,
+		Tokenize:           false,
+		MatchAllTokens:     false,
+		IncludeMatches:     false,
+		IncludeScore:       false,
 	}
 
 	return &defaultOptions
@@ -43,20 +43,20 @@ func NewFuse(list []string, opts FuseOptions) Fuse {
 }
 
 func prepareSearchers(pattern string, opts FuseOptions) (*bitap.Bitap, []*bitap.Bitap) {
-	fullSearcher := bitap.NewBitap(pattern, opts.location, opts.distance, opts.threshold,
-		opts.maxPatternLength, opts.caseSensitive, opts.findAllMatches, opts.minMatchCharLength)
+	fullSearcher := bitap.NewBitap(pattern, opts.Location, opts.Distance, opts.Threshold,
+		opts.MaxPatternLength, opts.CaseSensitive, opts.FindAllMatches, opts.MinMatchCharLength)
 
 	var tokenSearchers []*bitap.Bitap
 
-	if opts.tokenize == true {
+	if opts.Tokenize == true {
 		tokens := strings.Fields(pattern) // TODO: tokenization is limited to using WhiteSpace as the delimiter for now
 
 		// OPTIMIZATION: ? seems inefficient in 2 ways. 1) We are re-assigning the result to `tokenSearchers` on every iteration,
 		//				 and 2) we are accessing `opts` properties on every iteration
 		len := len(tokens)
 		for i := 0; i < len; i++ {
-			toAdd := bitap.NewBitap(tokens[i], opts.location, opts.distance, opts.threshold,
-				opts.maxPatternLength, opts.caseSensitive, opts.findAllMatches, opts.minMatchCharLength)
+			toAdd := bitap.NewBitap(tokens[i], opts.Location, opts.Distance, opts.Threshold,
+				opts.MaxPatternLength, opts.CaseSensitive, opts.FindAllMatches, opts.MinMatchCharLength)
 			tokenSearchers = append(tokenSearchers, toAdd)
 		}
 	}
@@ -113,7 +113,7 @@ func _analyze(fuse Fuse, value string, index int, tkSeachers []*bitap.Bitap, ful
 	// fmt.Println("isMatchFullS: ", isMatchFullS)
 	// fmt.Println("scoreFullS: ", scoreFullS)
 
-	if fuse.options.tokenize == true {
+	if fuse.options.Tokenize == true {
 		words := strings.Fields(value)
 		wordCnt := len(words)
 		var scores []float32
@@ -141,7 +141,7 @@ func _analyze(fuse Fuse, value string, index int, tkSeachers []*bitap.Bitap, ful
 					scores = append(scores, scoreTkS)
 				} else {
 					//   obj[word] = 1
-					if !fuse.options.matchAllTokens {
+					if !fuse.options.MatchAllTokens {
 						scores = append(scores, 1)
 					}
 				}
@@ -180,7 +180,7 @@ func _analyze(fuse Fuse, value string, index int, tkSeachers []*bitap.Bitap, ful
 	//    1) .tokenize AND .matchAllTokens are true, AND numTextMatches < tokenSearchers.length
 
 	checkTextMatches := true
-	if fuse.options.tokenize && fuse.options.findAllMatches && numTextMatches < len(tkSeachers) {
+	if fuse.options.Tokenize && fuse.options.FindAllMatches && numTextMatches < len(tkSeachers) {
 		checkTextMatches = false
 	}
 
