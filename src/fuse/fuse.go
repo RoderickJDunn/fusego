@@ -1,7 +1,6 @@
 package fuse
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 
@@ -11,7 +10,7 @@ import (
 // TODO: this is literally translated from JS for now, and doesn't work for GO sorts. Sorting functionality needs to be implemented
 //		 properly by following this link: https://golang.org/pkg/sort/
 func defaultSortFn(results []FuseResult, r1 int, r2 int) bool {
-	return results[r1].score < results[r2].score
+	return results[r1].Score < results[r2].Score
 }
 
 func DefaultOptions() *FuseOptions {
@@ -136,7 +135,7 @@ func _analyze(fuse Fuse, value string, index int, tkSeachers []*bitap.Bitap, ful
 				// tokenSearchResult = bitap.Search(word, tokenSearcher)
 				// let obj = {}
 				if isMatchTkS == true {
-					//   obj[word] = tokenSearchResult.score
+					//   obj[word] = tokenSearchResult.Score
 					exists = true
 					hasMatchInText = true
 					scores = append(scores, scoreTkS)
@@ -208,9 +207,9 @@ func _analyze(fuse Fuse, value string, index int, tkSeachers []*bitap.Bitap, ful
 		//                  greatly simplify this logic and structs for Version 1.
 		// Add it to the raw result list
 		result := FuseResult{
-			item:  index,
-			value: value,
-			score: finalScore,
+			Item:  index,
+			Value: value,
+			Score: finalScore,
 			// matchedIndices: mainSearchResult.matchedIndices
 		}
 		return append(results, result)
@@ -219,7 +218,7 @@ func _analyze(fuse Fuse, value string, index int, tkSeachers []*bitap.Bitap, ful
 	}
 }
 
-func FuseSearch(fuse Fuse, pattern string) []Match {
+func FuseSearch(fuse Fuse, pattern string) []FuseResult {
 
 	fullSearcher, tokenSearchers := prepareSearchers(pattern, fuse.options)
 	// fmt.Println("fullSearcher", fullSearcher)
@@ -233,11 +232,12 @@ func FuseSearch(fuse Fuse, pattern string) []Match {
 		return fuse.options.SortFn(results, i, j)
 	})
 
-	resLen := len(results)
+	return results
+	// resLen := len(results)
 
-	for i := 0; i < resLen; i++ {
-		fmt.Println(results[i])
-	}
+	// for i := 0; i < resLen; i++ {
+	// 	fmt.Println(results[i])
+	// }
 	//   this._computeScore(weights, results)
 
 	//   if (this.options.shouldSort) {
@@ -251,6 +251,6 @@ func FuseSearch(fuse Fuse, pattern string) []Match {
 	//   return this._format(results)
 
 	// DEV: returning empty matches
-	var matches []Match
-	return matches
+	// var matches []Match
+	// return matches
 }
