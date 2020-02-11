@@ -30,7 +30,7 @@ func LastIndexFrom(s, substr string, offset int) int {
 	//	is in the middle of a substring match. This matches JS V8 behavior
 	s = string(runes[:offset+1+patternLen])
 
-	println(s)
+	// println(s)
 	//
 	if idx := strings.LastIndex(s, substr); idx >= 0 {
 		return idx
