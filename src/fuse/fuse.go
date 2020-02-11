@@ -154,12 +154,14 @@ func _analyze(fuse Fuse, value string, index int, tkSeachers []*bitap.Bitap, ful
 			}
 		}
 
-		averageScore = scores[0]
-		scoresLen := len(scores)
-		for i := 1; i < scoresLen; i++ {
-			averageScore += scores[i]
+		if len(scores) > 0 {
+			averageScore = scores[0]
+			scoresLen := len(scores)
+			for i := 1; i < scoresLen; i++ {
+				averageScore += scores[i]
+			}
+			averageScore = averageScore / float32(scoresLen)
 		}
-		averageScore = averageScore / float32(scoresLen)
 
 		// fmt.Println("averageScore (tk): ", averageScore)
 		// this._log('Token score average:', averageScore)
