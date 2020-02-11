@@ -230,9 +230,11 @@ func FuseSearch(fuse Fuse, pattern string) []FuseResult {
 
 	// sort.Sort(ByScore(results))
 
-	sort.Slice(results, func(i, j int) bool {
-		return fuse.options.SortFn(results, i, j)
-	})
+	if fuse.options.ShouldSort == true {
+		sort.Slice(results, func(i, j int) bool {
+			return fuse.options.SortFn(results, i, j)
+		})
+	}
 
 	return results
 	// resLen := len(results)
@@ -251,8 +253,4 @@ func FuseSearch(fuse Fuse, pattern string) []FuseResult {
 	//   }
 
 	//   return this._format(results)
-
-	// DEV: returning empty matches
-	// var matches []Match
-	// return matches
 }
