@@ -111,9 +111,9 @@ type FuseOptions struct {
 //      [ [Array], [Array], [Array], [Array], [Array], [Array], [Array] ]
 
 type FuseResult struct {
-	Item  int
-	Value string
-	Score float32
+	Item  int     `json:"item"`
+	Value string  `json:"value"`
+	Score float32 `json:"score"`
 }
 
 type Fuse struct {
