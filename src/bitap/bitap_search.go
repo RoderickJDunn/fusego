@@ -1,6 +1,7 @@
 package bitap
 
 import (
+	"fmt"
 	"math"
 	"strings"
 
@@ -66,6 +67,10 @@ func BitapSearch(text string, bitap Bitap) (isMatch bool, score float32, matched
 
 	patternLen := len(bitap.pattern)
 	// // fmt.Println("patternLen", patternLen)
+
+	if patternLen == 0 {
+		fmt.Println("patternLen 0: ", text, bitap.pattern)
+	}
 
 	// a mask of the matches
 	matchMask := make([]uint8, textLen)
@@ -290,7 +295,7 @@ func Search(text string, bitap *Bitap) (isMatch bool, score float32, matchedIndi
 	// }
 	// for now just log error and exit if greater than word length
 	if uint(len(bitap.pattern)) > bitap.maxPatternLength {
-		// fmt.Println("Pattern is too long for bitap search. TODO: add regex search!")
+		fmt.Println("ERROR: Pattern is too long for bitap search. TODO: add regex search!")
 		matchedIndices := [][2]uint{}
 		return false, 0, matchedIndices
 	}
