@@ -2,8 +2,6 @@ package util
 
 import "strings"
 
-import "fmt"
-
 // NOTE: TODO: untested
 func IndexFrom(s, substr string, offset int) int {
 	s_len := len(s)
@@ -31,11 +29,11 @@ func LastIndexFrom(s, substr string, offset int) int {
 	// Slice string at offset, adding 1 to make substring inclusive (like JS), and add patternLen to allow successful finds when the offset
 	//	is in the middle of a substring match. This matches JS V8 behavior
 	if s_len < offset+1+patternLen {
-		fmt.Println("ERROR: Offset+1+ptn_len is longer than slice bounds")
-		fmt.Println("offset", offset)
-		fmt.Println("patternLen", patternLen)
-		fmt.Println("s", s)
-		fmt.Println("substr", substr)
+		// fmt.Println("ERROR: Offset+1+ptn_len is longer than slice bounds")
+		// fmt.Println("offset", offset)
+		// fmt.Println("patternLen", patternLen)
+		// fmt.Println("s", s)
+		// fmt.Println("substr", substr)
 		return -1
 	}
 
