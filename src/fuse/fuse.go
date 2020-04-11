@@ -42,11 +42,15 @@ func NewFuse(list []string, opts FuseOptions) Fuse {
 	return fuse
 }
 
-func prepareSearchers(pattern string, opts FuseOptions) (*bitap.Bitap, []*bitap.Bitap) {
-	fullSearcher := bitap.NewBitap(pattern, opts.Location, opts.Distance, opts.Threshold,
+func prepareSearchers(pattern string, opts FuseOptions) (*bitap.Bitap, []*bitap.Bitap, error) {
+	fullSearcher, fullErr := bitap.NewBitap(pattern, opts.Location, opts.Distance, opts.Threshold,
 		opts.MaxPatternLength, opts.CaseSensitive, opts.FindAllMatches, opts.MinMatchCharLength)
 
 	var tokenSearchers []*bitap.Bitap
+
+	if fullErr != nil {
+		return fullSearcher, tokenSearchers, fullErr
+	}
 
 	if opts.Tokenize == true {
 		tokens := strings.Fields(pattern) // TODO: tokenization is limited to using WhiteSpace as the delimiter for now
@@ -55,9 +59,13 @@ func prepareSearchers(pattern string, opts FuseOptions) (*bitap.Bitap, []*bitap.
 		//				 and 2) we are accessing `opts` properties on every iteration
 		len := len(tokens)
 		for i := 0; i < len; i++ {
-			toAdd := bitap.NewBitap(tokens[i], opts.Location, opts.Distance, opts.Threshold,
+			toAdd, tknErr := bitap.NewBitap(tokens[i], opts.Location, opts.Distance, opts.Threshold,
 				opts.MaxPatternLength, opts.CaseSensitive, opts.FindAllMatches, opts.MinMatchCharLength)
 			tokenSearchers = append(tokenSearchers, toAdd)
+
+			if tknErr != nil {
+				return fullSearcher, tokenSearchers, tknErr
+			}
 		}
 	}
 
@@ -222,18 +230,22 @@ func _analyze(fuse Fuse, value string, index int, tkSeachers []*bitap.Bitap, ful
 
 func FuseSearch(fuse Fuse, pattern string) []FuseResult {
 
-	fullSearcher, tokenSearchers := prepareSearchers(pattern, fuse.options)
+	fullSearcher, tokenSearchers, err := prepareSearchers(pattern, fuse.options)
 	// fmt.Println("fullSearcher", fullSearcher)
 	// fmt.Println("tokenSearchers", tokenSearchers)
 
-	results := _search(fuse, tokenSearchers, fullSearcher)
+	var results []FuseResult
 
-	// sort.Sort(ByScore(results))
+	if err == nil {
+		results = _search(fuse, tokenSearchers, fullSearcher)
 
-	if fuse.options.ShouldSort == true {
-		sort.Slice(results, func(i, j int) bool {
-			return fuse.options.SortFn(results, i, j)
-		})
+		// sort.Sort(ByScore(results))
+
+		if fuse.options.ShouldSort == true {
+			sort.Slice(results, func(i, j int) bool {
+				return fuse.options.SortFn(results, i, j)
+			})
+		}
 	}
 
 	return results

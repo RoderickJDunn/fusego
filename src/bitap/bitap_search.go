@@ -1,6 +1,7 @@
 package bitap
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"strings"
@@ -39,7 +40,9 @@ type Bitap struct {
 
 func NewBitap(pattern string,
 	location uint, distance uint, threshold float32, maxPatternLength uint, isCaseSensitive bool,
-	findAllMatches bool, minMatchCharLength uint) *Bitap {
+	findAllMatches bool, minMatchCharLength uint) (*Bitap, error) {
+	var err error
+	var errStr strings.Builder
 
 	// OPTIMIZATION: just assume its lowercase
 	if isCaseSensitive == false {
@@ -51,8 +54,15 @@ func NewBitap(pattern string,
 		alphabet = GetBitapAlphabet(pattern)
 	}
 
+	if len(alphabet) == 0 {
+		errStr.WriteString("Alphabet creation failed for pattern: ")
+		errStr.WriteString(pattern)
+		err = errors.New(errStr.String())
+	}
+
 	bt := Bitap{pattern, location, distance, threshold, maxPatternLength, isCaseSensitive, findAllMatches, minMatchCharLength, alphabet}
-	return &bt
+
+	return &bt, err
 }
 
 func BitapSearch(text string, bitap Bitap) (isMatch bool, score float32, matchedIndices [][2]uint) {
