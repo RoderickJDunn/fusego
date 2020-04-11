@@ -33,6 +33,7 @@ func DefaultOptions() *FuseOptions {
 	return &defaultOptions
 }
 
+// Create new Fuse Object
 func NewFuse(list []string, opts FuseOptions) Fuse {
 
 	var fuse Fuse
